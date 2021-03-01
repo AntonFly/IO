@@ -69,13 +69,13 @@ static ssize_t proc_read(struct file *file, char __user * buf, size_t len, loff_
 
 	if (*off > 0 || len < length)
 	{
-		printk(KERN_INFO "[VAR1 (%d %d)]: FAILED to read proc file: invalid offset", dev_major, dev_minor);
+		printk(KERN_INFO "[VAR5 (%d %d)]: FAILED to read proc file: invalid offset", dev_major, dev_minor);
 		return 0;
 	}
 
 	if (copy_to_user(buf, str, length) != 0)
 	{
-		printk(KERN_INFO "[VAR1 (%d %d)]: FAILED to read proc file: failed copy to user buffer", dev_major, dev_minor);
+		printk(KERN_INFO "[VAR5 (%d %d)]: FAILED to read proc file: failed copy to user buffer", dev_major, dev_minor);
 		return -EFAULT;
 	}
 
@@ -104,7 +104,10 @@ static ssize_t module_write(struct file *f, const char __user *ubuf,  size_t len
 	char buf[BUFSIZE];
 
 	if (*off > 0 || len > BUFSIZE)
+	{
+		printk(KERN_INFO "[VAR5 (%d %d)]: error occour, buffer to long\n", dev_major, dev_minor);
 		return -EFAULT;
+	}
 
 	if (copy_from_user(buf, ubuf, len))
 		return -EFAULT;
@@ -113,11 +116,11 @@ static ssize_t module_write(struct file *f, const char __user *ubuf,  size_t len
 	int num = 0;
 	for (i = 0; i < len; i++)
 	{
-			num++;
+					num++;
 	}
 
 	if (values_idx >= MAX_VALUES)
-		return -EFAULT;
+		return -EFAULT; 
 
 	values[values_idx++] = num;
 
@@ -158,29 +161,26 @@ static int __init proc_example_init(void)
 	if (alloc_chrdev_region(&d_number, 0, 1, d_name) != 0)
 		return -EFAULT;
 
-    if ((cl = class_create(THIS_MODULE, d_name)) == NULL){
-	unregister_chrdev_region(d_number, 1);
-	return -EFAULT;
-	}
+    if ((cl = class_create(THIS_MODULE, d_name)) == NULL)
+		goto dev_region_destroy;
+
 	cl->devnode = set_devnode;
 
     if (device_create(cl, NULL, d_number, NULL, d_name) == NULL)
-	class_destroy(cl);
+		goto class_destroy;
 
     cdev_init(&c_dev, &module_fops);
 
-
     if (cdev_add(&c_dev, d_number, 1) < 0)
-	device_destroy(cl, d_number);
-
-
-	if (entry = proc_create(d_name, 0777, NULL, &proc_fops) == NULL)
-		device_destroy(cl, d_number);
+		goto dev_destroy;
+	
+	if ((entry = proc_create(d_name, 0444, NULL, &proc_fops)) == NULL)
+		goto dev_destroy;
 
 	dev_major = MAJOR(d_number);
 	dev_minor = MINOR(d_number);
 
-	printk(KERN_INFO "Device var1 created");
+	printk(KERN_INFO "[VAR5 (%d %d)]: initialized\n", dev_major, dev_minor);
 	return 0;
 
 dev_destroy:
@@ -194,12 +194,13 @@ dev_region_destroy:
 
 static void __exit proc_example_exit(void)
 {
-	cdev_del(&c_dev);
-	device_destroy(cl, d_number);
-	class_destroy(cl);
-	unregister_chrdev_region(d_number, 1);
 	proc_remove(entry);
-	printk(KERN_INFO "Device var1 deleted", dev_major, dev_minor);
+	printk(KERN_INFO "%s: proc file is deleted\n", THIS_MODULE->name);
+	device_destroy(cl, d_number);
+	cdev_del(&device);
+	class_destroy(cl);
+	//unregister_chrdev_region(MKDEV(MY_MAJOR, 0), 1);
+	printk(KERN_INFO "Device deleted\n");
 }
 
 module_init(proc_example_init);
