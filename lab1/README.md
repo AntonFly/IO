@@ -29,29 +29,29 @@
 ```bash
 $ sudo insmod var1.ko && dmesg
 ...
-[VAR5 (240 0)]: initialized
+[VAR1 (511 0)]: initialized
 
 $ sudo rmmod var5 && dmesg
 ...
-[VAR5 (240 0)]: exit
+[VAR1 (511 0)]: exit
 ```
 
 Проверка прав символьного устройства
 ```bash
-$ ls -la /dev/var5
-crw-rw-rw- 1 root root 240, 0 Feb 21 11:16 var5
+$ ls -la /dev/var1
+crw-rw-rw- 1 root root 511, 0 фев 21 11:16 var1
 ```
 
 Примеры использования символьного устройства
 ```bash
-$ echo "Hello World" > /dev/var5 && cat /proc/var5
-[VAR5]: 10
-$ echo "Some msg" > /dev/var5 && cat /dev/var5
-[VAR5]: 10 7
+$ echo "Hello World 5" > /dev/var1 && cat /proc/var1
+[VAR5]: 13
+$ echo "1Some msg" > /dev/var1 && cat /dev/var1
+[VAR5]: 13 9
 ```
 
 Пример вывода сообщения в кольцевой буфер
 ```bash
-$ echo "Hello World" > /dev/var5 && dmesg
-[VAR5]: 10 7 10
+$ echo "Hello World" > /dev/var1 && dmesg
+[VAR5]: 13 9 11
 ```

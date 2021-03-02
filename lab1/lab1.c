@@ -69,13 +69,13 @@ static ssize_t proc_read(struct file *file, char __user * buf, size_t len, loff_
 
 	if (*off > 0 || len < length)
 	{
-		printk(KERN_INFO "[VAR5 (%d %d)]: FAILED to read proc file: invalid offset", dev_major, dev_minor);
+		printk(KERN_INFO "[VAR1 (%d %d)]: FAILED to read proc file: invalid offset", dev_major, dev_minor);
 		return 0;
 	}
 
 	if (copy_to_user(buf, str, length) != 0)
 	{
-		printk(KERN_INFO "[VAR5 (%d %d)]: FAILED to read proc file: failed copy to user buffer", dev_major, dev_minor);
+		printk(KERN_INFO "[VAR1 (%d %d)]: FAILED to read proc file: failed copy to user buffer", dev_major, dev_minor);
 		return -EFAULT;
 	}
 
@@ -105,7 +105,7 @@ static ssize_t module_write(struct file *f, const char __user *ubuf,  size_t len
 
 	if (*off > 0 || len > BUFSIZE)
 	{
-		printk(KERN_INFO "[VAR5 (%d %d)]: error occour, buffer to long\n", dev_major, dev_minor);
+		printk(KERN_INFO "[VAR1 (%d %d)]: error occour, buffer to long\n", dev_major, dev_minor);
 		return -EFAULT;
 	}
 
@@ -116,6 +116,8 @@ static ssize_t module_write(struct file *f, const char __user *ubuf,  size_t len
 	int num = 0;
 	for (i = 0; i < len; i++)
 	{
+				char ch = buf[i];
+				if (ch != '\n')
 					num++;
 	}
 
@@ -180,7 +182,7 @@ static int __init proc_example_init(void)
 	dev_major = MAJOR(d_number);
 	dev_minor = MINOR(d_number);
 
-	printk(KERN_INFO "[VAR5 (%d %d)]: initialized\n", dev_major, dev_minor);
+	printk(KERN_INFO "[VAR1 (%d %d)]: initialized\n", dev_major, dev_minor);
 	return 0;
 
 dev_destroy:
