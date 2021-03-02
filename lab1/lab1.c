@@ -79,7 +79,7 @@ static ssize_t proc_read(struct file *file, char __user * buf, size_t len, loff_
 		return -EFAULT;
 	}
 
-	*off = length;
+	*off += length;
 	return length;
 }
 
@@ -127,7 +127,7 @@ static ssize_t module_write(struct file *f, const char __user *ubuf,  size_t len
 	values[values_idx++] = num;
 
 	int str_len = strlen(buf);
-	*off = str_len;
+	*off += str_len;
 	return str_len;
 }
 
