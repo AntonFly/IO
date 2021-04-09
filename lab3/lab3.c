@@ -1,7 +1,5 @@
 #include "lab3.h"
 
-MODULE_AUTHOR("Nikita Karmatskikh");
-MODULE_AUTHOR("Dmitriy Chistokhodov");
 MODULE_VERSION("1.0");
 MODULE_LICENSE("GPL");
 
